@@ -15,11 +15,11 @@
   "ttl": 10,
   "resources": [
     {
-      "methods": ["get", "post"],
+      "methods": ["get", "put"],
       "resource": "/system/schedule"
     },
     {
-      "methods": ["get", "put", "delete"],
+      "methods": ["get", "put"],
       "resource": "/system/schedule/:id"
     }
   ]

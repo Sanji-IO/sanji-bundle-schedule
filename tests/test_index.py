@@ -7,6 +7,7 @@ import sys
 import logging
 import unittest
 from crontab import CronTab
+from mock import patch
 
 try:
     sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
@@ -24,7 +25,9 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 
 class TestScheduleClass(unittest.TestCase):
 
-    def setUp(self):
+    @patch("schedule.ModelInitiator")
+    def setUp(self, model):
+        model.return_value.db = []
         self.schedule = Schedule()
         self.schedule.insert({
             "enable": 1,
@@ -52,7 +55,7 @@ class TestScheduleClass(unittest.TestCase):
         })
 
         self.assertDictEqual({
-            "id": 2,
+            "id": 2,  # by default we have two factory entry (.json.factory)
             "enable": 1,
             "alias": "reboot",
             "command": "uptime && test_insert",

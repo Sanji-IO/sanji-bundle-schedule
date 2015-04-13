@@ -1,4 +1,6 @@
+import os
 from crontab import CronTab
+from sanji.model_initiator import ModelInitiator
 
 """
 {
@@ -15,23 +17,30 @@ from crontab import CronTab
 class Schedule(object):
     '''Schedule bundle class'''
     def __init__(self, *args, **kwargs):
-        self.db = []
-        # path_root = os.path.abspath(os.path.dirname(__file__))
-        # self.db = ModelInitiator("schedule", path_root)
+        path_root = os.path.abspath(os.path.dirname(__file__))
+        self.model = ModelInitiator("schedule", path_root)
+        self.sync()
+
+    def sync(self, clearAll=False):
+        '''Sync database to crontab.'''
+        for job in self.model.db:
+            self._update_job(job)
 
     def update(self, data):
         '''Update job by input data'''
-        for job in self.db:
+        for index, job in enumerate(self.model.db):
             if job["id"] != data["id"]:
                 continue
             #  update by merge two dict
             job = dict(job.items() + data.items())
-            self.update_job(job)
+            self.model.db[index] = job
+            self.model.save_db()
+            self._update_job(job)
             return job
 
         return None
 
-    def update_job(self, job):
+    def _update_job(self, job):
         '''Sync job to system'''
         cron = CronTab(user=job["executer"])
         cron.remove_all(comment=job["comment"])
@@ -55,14 +64,15 @@ class Schedule(object):
 
         data["id"] = insert_id
         data["comment"] = "sanji_schedule_%s" % (insert_id)
-        self.db.append(data)
+        self.model.db.append(data)
+        self.model.save_db()
 
         if data["enable"] == 1:
-            self.insert_job(data)
+            self._insert_job(data)
 
         return data
 
-    def insert_job(self, job):
+    def _insert_job(self, job):
         '''Sync to system crontab by assigned user'''
         cron = CronTab(user=job["executer"])
         item = cron.new(command=job["command"], comment=job["comment"])
@@ -71,14 +81,16 @@ class Schedule(object):
 
     def delete(self, id):
         '''Delete job by assigned id'''
-        to_remove = [i for i, val in enumerate(self.db) if val["id"] == id]
+        to_remove = [i for i, val in enumerate(self.model.db)
+                     if val["id"] == id]
         for index in reversed(to_remove):
-            self.delete_job(self.db[index])
-            del self.db[index]
+            self._delete_job(self.model.db[index])
+            del self.model.db[index]
+            self.model.save_db()
 
         return len(to_remove)
 
-    def delete_job(self, job):
+    def _delete_job(self, job):
         cron = CronTab(user=job["executer"])
         cron.remove_all(comment=job["comment"])
         cron.write()
@@ -86,9 +98,9 @@ class Schedule(object):
     def get(self, id=None):
         '''Get a job by assigned id or all jobs'''
         if id is None:
-            return self.db
+            return self.model.db
 
-        for job in self.db:
+        for job in self.model.db:
             if job["id"] == id:
                 return job
 
@@ -97,7 +109,7 @@ class Schedule(object):
     def _get_max_id(self):
         '''Get current max id'''
         maxid = 0
-        for job in self.db:
+        for job in self.model.db:
             if job["id"] > maxid:
                 maxid = job["id"]
 
