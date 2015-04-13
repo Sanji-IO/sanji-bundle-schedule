@@ -1,0 +1,26 @@
+{
+  "name": "schedule",
+  "version": "1.0.0",
+  "author": "Zack YL Shih",
+  "email": "zackyl.shih@moxa.com",
+  "description": "Schedule bundle.",
+  "license": "MIT",
+  "main": "index.py",
+  "argument": "",
+  "priority": 20,
+  "hook": [],
+  "dependencies": {},
+  "repository": "",
+  "role": "model",
+  "ttl": 10,
+  "resources": [
+    {
+      "methods": ["get", "post"],
+      "resource": "/system/schedule"
+    },
+    {
+      "methods": ["get", "put", "delete"],
+      "resource": "/system/schedule/:id"
+    }
+  ]
+}
