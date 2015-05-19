@@ -77,8 +77,8 @@ class TestScheduleClass(unittest.TestCase):
         result = self.schedule.update({
             "id": added["id"],
             "enable": 1,
-            "alias": "uptime",
-            "command": "uptime && test_update",
+            "alias": "upgrade-firmware",
+            "command": "upgrade-firmware",
             "schedule": "1 1 1 * *",
             "executer": True
         })
@@ -88,8 +88,8 @@ class TestScheduleClass(unittest.TestCase):
         self.assertDictEqual({
             "id": added["id"],
             "enable": 1,
-            "alias": "uptime",
-            "command": "uptime && test_update",
+            "alias": "upgrade-firmware",
+            "command": "/usr/bin/upgrade-firmware",
             "schedule": "1 1 1 * *",
             "executer": True,
             "comment": added["comment"]

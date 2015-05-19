@@ -40,17 +40,6 @@ class Index(Sanji):
 
         return response(data=update)
 
-    # Create and Delete is not enabled currently.
-    # @Route(methods="post", resource="/system/schedule")
-    # def post_schedule(self, message, response):
-    #     result = self.schedule.insert(message.data)
-    #     return response(data=result)
-
-    # @Route(methods="delete", resource="/system/schedule/:id")
-    # def delete_one_schedule(self, message, response):
-    #     effect_num = self.schedule.delete(message.param["id"])
-    #     return response(data={"effectRows": effect_num})
-
 
 if __name__ == "__main__":
     FORMAT = "%(asctime)s - %(levelname)s - %(lineno)s - %(message)s"

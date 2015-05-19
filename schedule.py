@@ -33,6 +33,14 @@ class Schedule(object):
                 continue
             #  update by merge two dict
             job = dict(job.items() + data.items())
+
+            if job["command"] == "reboot":
+                job["command"] = "/sbin/reboot"
+            elif job["command"] == "upgrade-firmware":
+                job["command"] = "/usr/bin/upgrade-firmware"
+            else:
+                continue
+
             self.model.db[index] = job
             self.model.save_db()
             self._update_job(job)
