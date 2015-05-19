@@ -7,11 +7,28 @@ from sanji.core import Route
 from sanji.connection.mqtt import Mqtt
 from schedule import Schedule
 
+from voluptuous import Schema
+from voluptuous import Required
+from voluptuous import REMOVE_EXTRA
+from voluptuous import Range
+from voluptuous import All
+
+
 logger = logging.getLogger()
 
 
 class Index(Sanji):
     '''Schedule bundle RESTful API endpoints'''
+    SCHEMA = Schema({
+        Required("id"): All(int, Range(min=1, max=10)),
+        "enable": All(int, Range(min=0, max=1)),
+        "alias": str,
+        "command": str,
+        "schedule": str,
+        "executer": str,
+    }, extra=REMOVE_EXTRA)
+
+    SCHEMA_ARR = Schema([SCHEMA])
 
     def init(self, *args, **kwargs):
         self.schedule = Schedule()
@@ -24,7 +41,7 @@ class Index(Sanji):
     def get_one_schedule(self, message, response):
         return response(data=self.schedule.get(id=message.param["id"]))
 
-    @Route(methods="put", resource="/system/schedule/:id")
+    @Route(methods="put", resource="/system/schedule/:id", schema=SCHEMA)
     def update_one_schedule(self, message, response):
         data = dict({"id": int(message.param["id"])}.items() +
                     message.data.items())
@@ -32,7 +49,7 @@ class Index(Sanji):
 
         return response(data=upadte)
 
-    @Route(methods="put", resource="/system/schedule")
+    @Route(methods="put", resource="/system/schedule", schema=SCHEMA_ARR)
     def update_multi_schedule(self, message, response):
         update = []
         for job in message.data:
