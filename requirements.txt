@@ -1,4 +1,4 @@
 flake8
 paho-mqtt
-git+https://github.com/Sanji-IO/sanji.git#egg=sanji
+sanji
 python-crontab

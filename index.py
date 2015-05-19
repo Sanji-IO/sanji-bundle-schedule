@@ -12,20 +12,21 @@ from voluptuous import Required
 from voluptuous import REMOVE_EXTRA
 from voluptuous import Range
 from voluptuous import All
+from voluptuous import Length
 
 
-logger = logging.getLogger()
+_logger = logging.getLogger("sanji.schedule")
 
 
 class Index(Sanji):
     '''Schedule bundle RESTful API endpoints'''
     SCHEMA = Schema({
-        Required("id"): All(int, Range(min=1, max=10)),
+        Required("id"): All(int, Range(min=1, max=65535)),
         "enable": All(int, Range(min=0, max=1)),
-        "alias": str,
-        "command": str,
-        "schedule": str,
-        "executer": str,
+        "alias": All(str, Length(1, 255)),
+        "command": All(str, Length(1, 255)),
+        "schedule": All(str, Length(1, 255)),
+        "executer": All(str, Length(1, 255)),
     }, extra=REMOVE_EXTRA)
 
     SCHEMA_ARR = Schema([SCHEMA])
@@ -61,6 +62,6 @@ class Index(Sanji):
 if __name__ == "__main__":
     FORMAT = "%(asctime)s - %(levelname)s - %(lineno)s - %(message)s"
     logging.basicConfig(level=0, format=FORMAT)
-    logger = logging.getLogger("Schedule")
+    _logger = logging.getLogger("sanji.schedule")
     schedule = Index(connection=Mqtt())
     schedule.start()
