@@ -78,7 +78,7 @@ class TestScheduleClass(unittest.TestCase):
             "id": added["id"],
             "enable": 1,
             "alias": "upgrade-firmware",
-            "command": "upgrade-firmware",
+            "command": "/usr/bin/upgrade-firmware",
             "schedule": "1 1 1 * *",
             "executer": True
         })

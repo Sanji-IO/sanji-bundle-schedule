@@ -1,4 +1,5 @@
 import os
+import logging
 from crontab import CronTab
 from sanji.model_initiator import ModelInitiator
 
@@ -12,6 +13,8 @@ from sanji.model_initiator import ModelInitiator
     "executer": "root"
 }
 """
+
+_logger = logging.getLogger("sanji.schedule.schedule")
 
 
 class Schedule(object):
@@ -34,11 +37,9 @@ class Schedule(object):
             #  update by merge two dict
             job = dict(job.items() + data.items())
 
-            if job["command"] == "reboot":
-                job["command"] = "/sbin/reboot"
-            elif job["command"] == "upgrade-firmware":
-                job["command"] = "/usr/bin/upgrade-firmware"
-            else:
+            if job["command"] != "/sbin/reboot" and \
+                    job["command"] != "/usr/bin/upgrade-firmware":
+                _logger.warning("%s is not supported" % job["command"])
                 continue
 
             self.model.db[index] = job
