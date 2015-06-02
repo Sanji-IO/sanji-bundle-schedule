@@ -74,26 +74,21 @@ class TestScheduleClass(unittest.TestCase):
         '''Update a job, It should update a job and return it'''
         added = self.schedule.get()[0]
 
-        result = self.schedule.update({
+        job = {
             "id": added["id"],
             "enable": 1,
-            "alias": "upgrade-firmware",
+            "alias": "upgrade",
             "command": "/usr/bin/upgrade-firmware",
             "schedule": "1 1 1 * *",
             "executer": True
-        })
+        }
+        result = self.schedule.update(job)
 
         self.assertNotEqual(result, None)
 
-        self.assertDictEqual({
-            "id": added["id"],
-            "enable": 1,
-            "alias": "upgrade-firmware",
-            "command": "/usr/bin/upgrade-firmware",
-            "schedule": "1 1 1 * *",
-            "executer": True,
-            "comment": added["comment"]
-        }, result)
+        job["comment"] = added["comment"]
+        job["command"] = result["command"]
+        self.assertDictEqual(job, result)
 
         jobs = []
         cron = CronTab(user=True)

@@ -20,8 +20,8 @@ _logger = logging.getLogger("sanji.schedule.schedule")
 class Schedule(object):
     '''Schedule bundle class'''
     def __init__(self, *args, **kwargs):
-        path_root = os.path.abspath(os.path.dirname(__file__))
-        self.model = ModelInitiator("schedule", path_root)
+        self.path_root = os.path.abspath(os.path.dirname(__file__))
+        self.model = ModelInitiator("schedule", self.path_root)
         self.sync()
 
     def sync(self, clearAll=False):
@@ -37,8 +37,12 @@ class Schedule(object):
             #  update by merge two dict
             job = dict(job.items() + data.items())
 
-            if job["command"] != "/sbin/reboot" and \
-                    job["command"] != "/usr/bin/upgrade-firmware":
+            # only support reboot & upgrade
+            if job["alias"] == "reboot":
+                job["command"] = "/sbin/reboot"
+            elif job["alias"] == "upgrade":
+                job["command"] = "%s/tools/upgrade.sh" % self.path_root
+            else:
                 _logger.warning("%s is not supported" % job["command"])
                 continue
 
