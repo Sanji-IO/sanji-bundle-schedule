@@ -1,0 +1,24 @@
+{
+  "name": "upgrade",
+  "version": "1.0",
+  "author": "Aeluin Chen",
+  "email": "aeluin.chen@moxa.com",
+  "description": "Run system upgradig.",
+  "license": "MOXA",
+  "main": "upgrade.py",
+  "argument": "",
+  "priority": 20,
+  "hook": [],
+  "dependencies": {},
+  "repository": "",
+  "role": "view",
+  "ttl": 10,
+  "resources": [
+    {
+      "resource": "/system/firmware"
+    },
+    {
+      "resource": "/system/firmware/check"
+    }
+  ]
+}
